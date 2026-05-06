@@ -25,15 +25,21 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Configure Docker
-        run: gcloud auth configure-docker $REGION-docker.pkg.dev
+        run: gcloud auth configure-docker $REGION-docker.pkg.
+        
+      - name: Check files
+        run: |
+             ls -la
+             ls -la app/      # if app folder exists
+             find . -name "package.json" -type f
 
       - name: Build Image
         run: |
-          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest .
+         docker build -f ./app/Dockerfile -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest ./app
 
       - name: Push Image
         run: |
-          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest
+          docker build -f ./app/Dockerfile -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest ./app
 
       - name: Terraform Init
         run: |

@@ -16,9 +16,7 @@ terraform/crash.log
 
 # GCP Service Account key — NEVER commit this
 gcp-sa-key.json
-*.json.key
-package-lock.json
-package.json
+
 
 
 # OS

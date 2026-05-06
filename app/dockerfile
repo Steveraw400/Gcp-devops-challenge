@@ -1,18 +1,15 @@
-# Use a slim Node base image
 FROM node:20-slim
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files first — Docker caches this layer
-# so npm install only reruns when dependencies change
+# Copy only dependency files first
 COPY package*.json ./
+
 RUN npm install --omit=dev
 
-# Copy the rest of the application
-COPY . .
+# Copy the rest of the app
+COPY app/. .
 
-# Cloud Run expects the app to listen on PORT (default 8080)
 EXPOSE 8080
 
-CMD ["node", "server.js"]
+CMD ["npm", "start"]

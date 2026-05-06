@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  PROJECT_ID: your-project-id
+  PROJECT_ID: rawson-devops-project
   REGION: us-central1
   REPO: devops-repo
   SERVICE: devops-app
@@ -29,7 +29,7 @@ jobs:
 
       - name: Build Image
         run: |
-          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest ./app
+          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest .
 
       - name: Push Image
         run: |

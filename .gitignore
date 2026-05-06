@@ -1,0 +1,28 @@
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/crash.log
+
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Docker
+.dockerignore
+
+# GCP Service Account key — NEVER commit this
+gcp-sa-key.json
+*.json.key
+package-lock.json
+package.json
+
+
+# OS
+.DS_Store
+Thumbs.db
+key.json
+node_modules/

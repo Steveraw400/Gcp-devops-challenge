@@ -8,7 +8,7 @@ COPY package*.json ./
 RUN npm install --omit=dev
 
 # Copy the rest of the app
-COPY app/ ./
+COPY . . 
 
 EXPOSE 8080
 

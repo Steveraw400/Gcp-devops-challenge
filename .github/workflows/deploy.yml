@@ -32,6 +32,19 @@ jobs:
           cd terraform
           terraform init
 
+
+      - name: Terraform Import Repository
+        run: |
+          cd terraform
+          terraform import module.artifact_registry.google_artifact_registry_repository.repo \
+          projects/$PROJECT_ID/locations/$REGION/repositories/$REPO
+
+      - name: Terraform Import Service Account
+        run: |
+          cd terraform
+          terraform import module.iam.google_service_account.sa \
+          projects/$PROJECT_ID/serviceAccounts/devops-sa@$PROJECT_ID.iam.gserviceaccount.com
+
       - name: Terraform Apply
         run: |
           cd terraform

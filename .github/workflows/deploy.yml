@@ -56,5 +56,5 @@ jobs:
 
       - name: Terraform Apply
         run: |
-          cd terraform
-          terraform apply -auto-approve
+         cd terraform
+         terraform apply -auto-approve -var="bucket_name=$BUCKET_NAME"

@@ -20,8 +20,9 @@ variable "project_id" {
   type        = string
 }
 
+
 variable "image" {
-  description = "Container image for the Cloud Run service."
+  description = "Container image URI to deploy to Cloud Run"
   type        = string
 }
 

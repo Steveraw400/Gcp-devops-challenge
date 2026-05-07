@@ -44,7 +44,7 @@ jobs:
           --region $REGION \
           --platform managed \
           --allow-unauthenticated \
-          --set-env-vars PORT=8080,BUCKET_NAME=$BUCKET_NAME
+          --set-env-vars BUCKET_NAME=$BUCKET_NAME
 
       - name: Terraform Init
         run: |

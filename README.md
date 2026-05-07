@@ -77,14 +77,28 @@ Terraform is used to provision:
 ### Structure:
 
 ```
-terraform/
-├── main.tf
-├── variables.tf
-├── outputs.tf
-├── modules/
-│   ├── cloud-run/
-│   ├── artifact-registry/
-│   └── iam/
+gcp-devops-challenge/
+│
+├── app/                     # Your sample app (Node.js or Go)
+│   ├── Dockerfile
+│   └── src/
+│
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   ├── provider.tf
+│   │
+│   └── modules/
+│       ├── artifact-registry/
+│       ├── cloud-run/
+│       ├── network/
+│       └── iam/
+│
+├── .github/workflows/
+│   └── deploy.yml
+│
+└── README.md
 ```
 
 ---

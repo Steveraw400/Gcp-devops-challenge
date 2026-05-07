@@ -167,7 +167,7 @@ terraform apply
 ## 🌐 Live Application
 
 ```
-https://devops-app-xxxxx.run.app
+https://devops-app-519424870379.us-central1.run.app
 ```
 
 ---

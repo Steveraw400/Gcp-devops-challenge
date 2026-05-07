@@ -11,77 +11,87 @@ env:
   REPO: devops-repo
   SERVICE: devops-app
   BUCKET_NAME: devops-challenge-bucket
-  
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
       - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: |
-          cd terraform
-          terraform init
+        run: cd terraform && terraform init
 
-
+      # ------------------------------------------------------------------
+      # 1. Import existing resources so Terraform doesn't try to recreate them
+      # ------------------------------------------------------------------
       - name: Terraform Import Existing Resources
         run: |
           cd terraform
+          # Artifact Registry repository
           terraform import -input=false \
-          -var="project_id=$PROJECT_ID" \
-          -var="bucket_name=$BUCKET_NAME" \
-          -var="repo_name=$REPO" \
-          -var="region=$REGION" \
-          -var="service_name=$SERVICE" \
-          module.artifact_registry.google_artifact_registry_repository.repo \
-          projects/$PROJECT_ID/locations/$REGION/repositories/$REPO || true
+            -var="project_id=$PROJECT_ID" \
+            -var="bucket_name=$BUCKET_NAME" \
+            -var="repo_name=$REPO" \
+            -var="region=$REGION" \
+            -var="service_name=$SERVICE" \
+            module.artifact_registry.google_artifact_registry_repository.repo \
+            projects/$PROJECT_ID/locations/$REGION/repositories/$REPO || true
 
+          # Service Account
           terraform import -input=false \
-          -var="project_id=$PROJECT_ID" \
-          -var="bucket_name=$BUCKET_NAME" \
-          -var="repo_name=$REPO" \
-          -var="region=$REGION" \
-          -var="service_name=$SERVICE" \
-          module.iam.google_service_account.sa \
-          projects/$PROJECT_ID/serviceAccounts/devops-sa@$PROJECT_ID.iam.gserviceaccount.com || true
-          
+            -var="project_id=$PROJECT_ID" \
+            -var="bucket_name=$BUCKET_NAME" \
+            -var="repo_name=$REPO" \
+            -var="region=$REGION" \
+            -var="service_name=$SERVICE" \
+            module.iam.google_service_account.sa \
+            projects/$PROJECT_ID/serviceAccounts/devops-sa@$PROJECT_ID.iam.gserviceaccount.com || true
+
+          # Cloud Run service
+          terraform import -input=false \
+            -var="project_id=$PROJECT_ID" \
+            -var="bucket_name=$BUCKET_NAME" \
+            -var="repo_name=$REPO" \
+            -var="region=$REGION" \
+            -var="service_name=$SERVICE" \
+            module.cloud_run.google_cloud_run_v2_service.app \
+            projects/$PROJECT_ID/locations/$REGION/services/$SERVICE || true
+
+      # ------------------------------------------------------------------
+      # 2. Build and push Docker image with unique tag (Git SHA)
+      # ------------------------------------------------------------------
+      - name: Configure Docker
+        run: gcloud auth configure-docker $REGION-docker.pkg.dev
+
+      - name: Build Image
+        run: |
+          IMAGE_TAG=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:${{ github.sha }}
+          docker build -f Dockerfile -t $IMAGE_TAG .
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Push Image
+        run: docker push $IMAGE_TAG
+
+      # ------------------------------------------------------------------
+      # 3. Deploy using Terraform (now owns Cloud Run)
+      # ------------------------------------------------------------------
       - name: Terraform Apply
         run: |
           cd terraform
           terraform apply -auto-approve \
-           -var="project_id=$PROJECT_ID" \
-           -var="bucket_name=$BUCKET_NAME" \
-           -var="repo_name=$REPO" \
-           -var="region=$REGION" \
-           -var="service_name=$SERVICE"
-
-      - name: Configure Docker
-        run: gcloud auth configure-docker $REGION-docker.pkg.dev
-        
-      - name: Build Image
-        run: |
-         docker build -f Dockerfile -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest .
-
-      - name: Push Image
-        run: |
-          docker push  $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest 
-        
-      - name: Deploy to Cloud Run
-        run: |
-          gcloud run deploy app \
-            --image $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest \
-            --region $REGION \
-            --platform managed \
-            --allow-unauthenticated \
-            --set-env-vars BUCKET_NAME=$BUCKET_NAME
-
-     
+            -var="project_id=$PROJECT_ID" \
+            -var="bucket_name=$BUCKET_NAME" \
+            -var="repo_name=$REPO" \
+            -var="region=$REGION" \
+            -var="service_name=$SERVICE" \
+            -var="image=$IMAGE_TAG"

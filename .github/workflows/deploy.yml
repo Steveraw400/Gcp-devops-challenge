@@ -34,6 +34,20 @@ jobs:
       # ------------------------------------------------------------------
       # 1. Import existing resources so Terraform doesn't try to recreate them
       # ------------------------------------------------------------------
+      - name: One-time Terraform Import (remove after first success)
+        run: |
+         cd terraform
+         terraform init -reconfigure
+         terraform import -input=false \
+         -var="project_id=$PROJECT_ID" \
+         -var="bucket_name=$BUCKET_NAME" \
+         -var="repo_name=$REPO" \
+         -var="region=$REGION" \
+         -var="service_name=$SERVICE" \
+          module.artifact_registry.google_artifact_registry_repository.repo \
+          projects/$PROJECT_ID/locations/$REGION/repositories/$REPO || true
+
+      
       - name: Terraform Import Existing Resources
         run: |
           cd terraform

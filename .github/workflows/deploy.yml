@@ -44,7 +44,10 @@ jobs:
           --region $REGION \
           --platform managed \
           --allow-unauthenticated \
-          --set-env-vars BUCKET_NAME=$BUCKET_NAME
+          --set-env-vars BUCKET_NAME=$
+          
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2    
 
       - name: Terraform Init
         run: |

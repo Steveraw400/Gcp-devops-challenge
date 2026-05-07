@@ -10,7 +10,8 @@ env:
   REGION: us-central1
   REPO: devops-repo
   SERVICE: devops-app
-
+  BUCKET_NAME: devops-challenge-bucket
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -43,6 +44,7 @@ jobs:
           --region $REGION \
           --platform managed \
           --allow-unauthenticated
+          --set-env-vars BUCKET_NAME=$BUCKET_NAME
 
       - name: Terraform Init
         run: |

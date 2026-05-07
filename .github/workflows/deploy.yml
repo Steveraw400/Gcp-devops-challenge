@@ -33,18 +33,27 @@ jobs:
           terraform init
 
 
-      - name: Terraform Import Repository
+      - name: Terraform Import Existing Resources
         run: |
           cd terraform
-          terraform import module.artifact_registry.google_artifact_registry_repository.repo \
-          projects/$PROJECT_ID/locations/$REGION/repositories/$REPO
+          terraform import -input=false \
+          -var="project_id=$PROJECT_ID" \
+          -var="bucket_name=$BUCKET_NAME" \
+          -var="repo_name=$REPO" \
+          -var="region=$REGION" \
+          -var="service_name=$SERVICE" \
+          module.artifact_registry.google_artifact_registry_repository.repo \
+          projects/$PROJECT_ID/locations/$REGION/repositories/$REPO || true
 
-      - name: Terraform Import Service Account
-        run: |
-          cd terraform
-          terraform import module.iam.google_service_account.sa \
-          projects/$PROJECT_ID/serviceAccounts/devops-sa@$PROJECT_ID.iam.gserviceaccount.com
-
+          terraform import -input=false \
+          -var="project_id=$PROJECT_ID" \
+          -var="bucket_name=$BUCKET_NAME" \
+          -var="repo_name=$REPO" \
+          -var="region=$REGION" \
+          -var="service_name=$SERVICE" \
+          module.iam.google_service_account.sa \
+          projects/$PROJECT_ID/serviceAccounts/devops-sa@$PROJECT_ID.iam.gserviceaccount.com || 
+          
       - name: Terraform Apply
         run: |
           cd terraform

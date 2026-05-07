@@ -35,11 +35,19 @@ jobs:
 
       - name: Build Image
         run: |
-         docker build -f ./app/Dockerfile -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest ./app
+         docker build -f Dockerfile -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest .
 
       - name: Push Image
         run: |
-          docker build -f ./app/Dockerfile -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest ./app
+          docker push -f Dockerfile -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest .
+        
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy app \
+          --image $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest \
+          --region $REGION \
+          --platform managed \
+          --allow-unauthenticated
 
       - name: Terraform Init
         run: |

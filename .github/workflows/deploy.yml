@@ -43,8 +43,8 @@ jobs:
           --image $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest \
           --region $REGION \
           --platform managed \
-          --allow-unauthenticated
-          --set-env-vars BUCKET_NAME=$BUCKET_NAME
+          --allow-unauthenticated \
+          --set-env-vars PORT=8080,BUCKET_NAME=$BUCKET_NAME
 
       - name: Terraform Init
         run: |

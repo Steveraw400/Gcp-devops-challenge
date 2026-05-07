@@ -52,7 +52,7 @@ jobs:
           -var="region=$REGION" \
           -var="service_name=$SERVICE" \
           module.iam.google_service_account.sa \
-          projects/$PROJECT_ID/serviceAccounts/devops-sa@$PROJECT_ID.iam.gserviceaccount.com || 
+          projects/$PROJECT_ID/serviceAccounts/devops-sa@$PROJECT_ID.iam.gserviceaccount.com || true
           
       - name: Terraform Apply
         run: |

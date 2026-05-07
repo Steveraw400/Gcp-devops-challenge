@@ -25,13 +25,8 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Configure Docker
-        run: gcloud auth configure-docker $REGION-docker.pkg.
+        run: gcloud auth configure-docker $REGION-docker.pkg.dev
         
-      - name: Check files
-        run: |
-             ls -la
-             ls -la app/      # if app folder exists
-             find . -name "package.json" -type f
 
       - name: Build Image
         run: |
@@ -39,7 +34,7 @@ jobs:
 
       - name: Push Image
         run: |
-          docker push -f Dockerfile -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest .
+          docker push  $REGION-docker.pkg.dev/$PROJECT_ID/$REPO/app:latest .
         
       - name: Deploy to Cloud Run
         run: |

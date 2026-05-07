@@ -58,5 +58,8 @@ jobs:
         run: |
           cd terraform
           terraform apply -auto-approve \
-            -var="bucket_name=$BUCKET_NAME" \
-            -var="project_id=$PROJECT_ID"
+           -var="project_id=$PROJECT_ID" \
+           -var="bucket_name=$BUCKET_NAME" \
+           -var="repo_name=$REPO" \
+           -var="region=$REGION" \
+           -var="service_name=$SERVICE"

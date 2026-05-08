@@ -35,7 +35,7 @@ The solution emphasizes:
 
 ## 🖼️ Architecture Diagram
 
-![Architecture](./gcp_devops_architecture.png)
+![Architecture](images/Devop Challenge-diagram.png)
 
 ---
 
